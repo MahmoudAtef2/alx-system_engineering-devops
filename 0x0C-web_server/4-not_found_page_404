@@ -1,10 +1,23 @@
 #!/usr/bin/env bash
-# install nginx and serve and configure redirect.
+# install nginx and serve
 sudo apt -y update
 sudo apt -y install nginx
-ufw allow 'Nginx HTTP'
-echo 'Hello World!' > /var/www/html/index.nginx-debian.html
-echo "Ceci n'est pas une page" | sudo tee /var/www/html/custome_404.html
+sudo service nginx start
+sudo ufw allow 'Nginx HTTP'
+
+# Give the user ownership to website files for easy editing
+sudo chown -R "$USER":"$USER" /var/www/html
+sudo chmod -R 755 /var/www
+
+# Creating new index
+echo "Hello World!" > /var/www/html/index.html
+
+# Setting up /redirect_me to youtube
 sudo sed -i '/listen 80 default_server/a rewrite ^/redirect_me https://www.youtube.com/ permanent;' /etc/nginx/sites-available/default
-sudo sed -i "40i error_page 404 /custome_404.html;" /etc/nginx/sites-available/default
+
+# Set up a 404 page
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/error_404.html
+sudo sed -i "40i error_page 404 /error_404.html;" /etc/nginx/sites-available/default
+
+# Restarting nginx
 sudo service nginx restart
