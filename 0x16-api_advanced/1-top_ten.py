@@ -1,20 +1,24 @@
 #!/usr/bin/python3
-"""define module print 10 title"""
+'''
+    this module contains the function top_ten
+'''
 import requests
+from sys import argv
 
 
 def top_ten(subreddit):
-    """print title"""
-    if subreddit is None or type(subreddit) is not str:
-        return (0)
-    url = f'https://www.reddit.com/r/{subreddit}/hot/.json'
-    headers = {'User-Agent': 'hamzaApp/1.0 by hamza-25'}
-    params = {'limit': 10}
-    response = requests.get(url, headers=headers,
-                            params=params, allow_redirects=False)
-    if response.status_code == 404:
-        print("None")
-        return
-    data = response.json().get('data')
-    for title in data.get('children'):
-        print(title.get('data').get('title'))
+    '''
+        returns the top ten posts for a given subreddit
+    '''
+    user = {'User-Agent': 'Lizzie'}
+    url = requests.get('https://www.reddit.com/r/{}/hot/.json?limit=10'
+                       .format(subreddit), headers=user).json()
+    try:
+        for post in url.get('data').get('children'):
+            print(post.get('data').get('title'))
+    except Exception:
+        print(None)
+
+
+if __name__ == "__main__":
+    top_ten(argv[1])
